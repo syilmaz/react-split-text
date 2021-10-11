@@ -6,6 +6,10 @@ export interface LineWrapperProp<T = any> {
    */
   lineIndex: number;
   /**
+   * The total number of lines.
+   */
+   totalLines: number;
+  /**
    * Extra props forwarded from SplitText.
    */
   extraProps?: T;
@@ -21,9 +25,17 @@ export interface WordWrapperProp<T = any> {
    */
   lineIndex: number;
   /**
+   * The total number of lines.
+   */
+   totalLines: number;
+  /**
    * The current index of the word.
    */
   wordIndex: number;
+  /**
+   * The total number of words.
+   */
+   totalWords: number;
   /**
    * The current index of the total wrapped words inside <SplitText />.
    */
@@ -44,13 +56,25 @@ export interface LetterWrapperProp<T = any> {
    */
   lineIndex: number;
   /**
+   * The total number of lines.
+   */
+   totalLines: number;
+  /**
    * The current word index where the letter wrapper lives.
    */
   wordIndex: number;
   /**
+   * The total number of words.
+   */
+   totalWords: number;
+  /**
    * The current index of the letter.
    */
   letterIndex: number;
+  /**
+   * The total number of letters.
+   */
+   totalLetters: number;
   /**
    * The current index of the total wrapped letters inside <SplitText />.
    */

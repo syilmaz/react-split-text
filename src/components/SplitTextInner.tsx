@@ -113,14 +113,16 @@ export const SplitTextInner: FC<SplitTextProps> = forwardRef(
             i === words.length - 1 ? word : word + ' '
           );
           return (
-            <LineWrapper key={i} lineIndex={i} extraProps={extraProps}>
+            <LineWrapper key={i} lineIndex={i} totalLines={lines.length} extraProps={extraProps}>
               {words.map((word, j) => {
                 const letters = word.split('');
                 return (
                   <WordWrapper
                     key={j}
                     lineIndex={i}
+                    totalLines={lines.length}
                     wordIndex={j}
+                    totalWords={words.length}
                     countIndex={wordCount++}
                     extraProps={extraProps}
                   >
@@ -128,8 +130,11 @@ export const SplitTextInner: FC<SplitTextProps> = forwardRef(
                       <LetterWrapper
                         key={k}
                         lineIndex={i}
+                        totalLines={lines.length}
                         wordIndex={j}
+                        totalWords={words.length}
                         letterIndex={k}
+                        totalLetters={letters.length}
                         countIndex={letterCount++}
                         extraProps={extraProps}
                       >
