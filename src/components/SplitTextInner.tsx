@@ -1,6 +1,7 @@
 import React, {
   useRef,
   useLayoutEffect,
+  useEffect,
   useState,
   memo,
   FC,
@@ -90,6 +91,10 @@ export const SplitTextInner: FC<SplitTextProps> = forwardRef(
     }
 
     useLayoutEffect(() => makeLines(), [text]);
+
+    useEffect(() => {
+      console.log(lines)
+    }, [lines])
 
     let wordCount = 0;
     let letterCount = 0;
