@@ -39,6 +39,9 @@ export const SplitTextInner: FC<SplitTextProps> = forwardRef(
 
     const elRef = useRef<HTMLDivElement | null>(null);
     const [lines, setLines] = useState<string[]>([]);
+    const [totalLines, setTotalLines] = useState<number>(null);
+    const [totalWords, setTotalWords] = useState<number>(null);
+    const [totalChars, setTotalChars] = useState<number>(null);
     const maxCharPerLine = useRef<number>(0);
 
     function makeLines() {
@@ -92,9 +95,20 @@ export const SplitTextInner: FC<SplitTextProps> = forwardRef(
 
     useLayoutEffect(() => makeLines(), [text]);
 
-    useEffect(() => {
-      console.log(lines)
+    useLayoutEffect(() => {
+      setTotalLines(lines.length)
+      const wordTotal = lines.reduce((count, line) => count + line.split(' ').length, 0)
+      setTotalWords(wordTotal)
+      let charsTotal = lines.reduce((count, line) => {
+        let words = line.split(' ')
+        let charCount = words.reduce((total, word) => total + word.length, 0)
+        
+        return count + charCount
+      }, 0)
+      setTotalChars(charsTotal)
+      console.log(`Line Total: ${lines.length}, Words Total: ${wordTotal}, Letter Total: ${charsTotal}`)
     }, [lines])
+
 
     let wordCount = 0;
     let letterCount = 0;
@@ -118,16 +132,16 @@ export const SplitTextInner: FC<SplitTextProps> = forwardRef(
             i === words.length - 1 ? word : word + ' '
           );
           return (
-            <LineWrapper key={i} lineIndex={i} totalLines={lines.length} extraProps={extraProps}>
+            <LineWrapper key={i} lineIndex={i} totalLines={totalLines} extraProps={extraProps}>
               {words.map((word, j) => {
                 const letters = word.split('');
                 return (
                   <WordWrapper
                     key={j}
                     lineIndex={i}
-                    totalLines={lines.length}
+                    totalLines={totalLines}
                     wordIndex={j}
-                    totalWords={words.length}
+                    totalWords={totalWords}
                     countIndex={wordCount++}
                     extraProps={extraProps}
                   >
@@ -135,11 +149,11 @@ export const SplitTextInner: FC<SplitTextProps> = forwardRef(
                       <LetterWrapper
                         key={k}
                         lineIndex={i}
-                        totalLines={lines.length}
+                        totalLines={totalLines}
                         wordIndex={j}
-                        totalWords={words.length}
+                        totalWords={totalWords}
                         letterIndex={k}
-                        totalLetters={letters.length}
+                        totalLetters={totalChars}
                         countIndex={letterCount++}
                         extraProps={extraProps}
                       >
