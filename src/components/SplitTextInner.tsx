@@ -39,9 +39,9 @@ export const SplitTextInner: FC<SplitTextProps> = forwardRef(
 
     const elRef = useRef<HTMLDivElement | null>(null);
     const [lines, setLines] = useState<string[]>([]);
-    const [totalLines, setTotalLines] = useState<number>(null);
-    const [totalWords, setTotalWords] = useState<number>(null);
-    const [totalChars, setTotalChars] = useState<number>(null);
+    const [totalLines, setTotalLines] = useState<number>(0);
+    const [totalWords, setTotalWords] = useState<number>(0);
+    const [totalChars, setTotalChars] = useState<number>(0);
     const maxCharPerLine = useRef<number>(0);
 
     function makeLines() {
