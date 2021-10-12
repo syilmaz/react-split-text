@@ -97,16 +97,16 @@ export const SplitTextInner: FC<SplitTextProps> = forwardRef(
 
     if (lines.length) {
       const totalLines = lines.length;
-      const totalWords = lines.reduce(
-        (count, line) => count + line.split(' ').length,
-        0
-      );
+      const totalWords = lines.reduce( (count, line) => count + line.split(' ').length, 0 );
       const totalChars = lines.reduce((count, line) => {
         let words = line.split(' ');
+        words = words.map((w, i) =>
+          i === words.length - 1 ? w : w + ' '
+        );
         let charCount = words.reduce((total, word) => total + word.length, 0);
-
         return count + charCount;
       }, 0);
+
       console.log(
         `Line Total: ${lines.length}, Words Total: ${totalWords}, Letter Total: ${totalChars}`
       );
