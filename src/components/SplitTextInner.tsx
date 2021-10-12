@@ -29,7 +29,7 @@ export const SplitTextInner: FC<SplitTextProps> = forwardRef(
     ref
   ) {
     let text = '';
-    React.Children.map(children, child => {
+    React.Children.map(children, (child) => {
       if (typeof child === 'string' || typeof child === 'number') {
         text += String(child);
       } else {
@@ -39,10 +39,6 @@ export const SplitTextInner: FC<SplitTextProps> = forwardRef(
 
     const elRef = useRef<HTMLDivElement | null>(null);
     const [lines, setLines] = useState<string[]>([]);
-    const totalLines = useRef<number>(0);
-    const totalWords = useRef<number>(0);
-    const totalChars = useRef<number>(0);
-
     const maxCharPerLine = useRef<number>(0);
 
     function makeLines() {
@@ -73,7 +69,7 @@ export const SplitTextInner: FC<SplitTextProps> = forwardRef(
     function refreshLines(previous: string[], newText: string) {
       const charPerLine =
         maxCharPerLine.current ||
-        previous.map(line => line.length).sort((a, b) => b - a)[0];
+        previous.map((line) => line.length).sort((a, b) => b - a)[0];
       const lines: string[] = [];
       let line: string = '';
       let charCount = 0;
@@ -88,7 +84,7 @@ export const SplitTextInner: FC<SplitTextProps> = forwardRef(
         line += word.trim() + ' ';
       }
       lines.push(line);
-      setLines(lines.map(line => line.trim()));
+      setLines(lines.map((line) => line.trim()));
       if (charPerLine > maxCharPerLine.current) {
         maxCharPerLine.current = charPerLine;
       }
@@ -96,82 +92,158 @@ export const SplitTextInner: FC<SplitTextProps> = forwardRef(
 
     useLayoutEffect(() => makeLines(), [text]);
 
-    useLayoutEffect(() => {
-      totalLines.current = lines.length;
-      totalWords.current = lines.reduce((count, line) => count + line.split(' ').length, 0)
-      totalChars.current = lines.reduce((count, line) => {
-        let words = line.split(' ')
-        let charCount = words.reduce((total, word) => total + word.length, 0)
-        
-        return count + charCount
-      }, 0)
-      console.log(`Line Total: ${lines.length}, Words Total: ${totalWords.current}, Letter Total: ${totalChars.current}`)
-    }, [lines])
-
-
     let wordCount = 0;
     let letterCount = 0;
 
-    return lines.length ? (
-      <div
-        className={className}
-        ref={div => {
-          elRef.current = div;
-          if (typeof ref == 'function') {
-            ref(div);
-          } else if (ref) {
-            (ref as MutableRefObject<HTMLDivElement | null>).current = div;
-          }
-        }}
-        style={style}
-      >
-        {lines.map((line, i) => {
-          let words = line.split(' ');
-          words = words.map((word, i) =>
-            i === words.length - 1 ? word : word + ' '
-          );
-          return (
-            <LineWrapper key={i} lineIndex={i} totalLines={totalLines.current} extraProps={extraProps}>
-              {words.map((word, j) => {
-                const letters = word.split('');
-                return (
-                  <WordWrapper
-                    key={j}
+    if (lines.length) {
+      const totalLines = lines.length;
+      const totalWords = lines.reduce(
+        (count, line) => count + line.split(' ').length,
+        0
+      );
+      const totalChars = lines.reduce((count, line) => {
+        let words = line.split(' ');
+        let charCount = words.reduce((total, word) => total + word.length, 0);
+
+        return count + charCount;
+      }, 0);
+      console.log(
+        `Line Total: ${lines.length}, Words Total: ${totalWords}, Letter Total: ${totalChars}`
+      );
+
+      return (
+        <div
+          className={className}
+          ref={(div) => {
+            elRef.current = div;
+            if (typeof ref == 'function') {
+              ref(div);
+            } else if (ref) {
+              (ref as MutableRefObject<HTMLDivElement | null>).current = div;
+            }
+          }}
+          style={style}
+        >
+          {lines.map((line, i) => {
+            let words = line.split(' ');
+            words = words.map((word, i) =>
+              i === words.length - 1 ? word : word + ' '
+            );
+            return (
+              <LineWrapper
+                key={i}
+                lineIndex={i}
+                totalLines={totalLines}
+                extraProps={extraProps}
+              >
+                {words.map((word, j) => {
+                  const letters = word.split('');
+                  return (
+                    <WordWrapper
+                      key={j}
+                      lineIndex={i}
+                      totalLines={totalLines}
+                      wordIndex={j}
+                      totalWords={totalWords}
+                      countIndex={wordCount++}
+                      extraProps={extraProps}
+                    >
+                      {letters.map((char, k) => (
+                        <LetterWrapper
+                          key={k}
+                          lineIndex={i}
+                          totalLines={totalLines}
+                          wordIndex={j}
+                          totalWords={totalWords}
+                          letterIndex={k}
+                          totalLetters={totalChars}
+                          countIndex={letterCount++}
+                          extraProps={extraProps}
+                        >
+                          {char}
+                        </LetterWrapper>
+                      ))}
+                    </WordWrapper>
+                  );
+                })}
+              </LineWrapper>
+            );
+          })}
+        </div>
+      );
+    } else {
+      return (
+        <div className={className} ref={elRef} style={style}>
+          {text.split(' ').map((word, i) => (
+            <span key={i}>{word} </span>
+          ))}
+        </div>
+      );
+    }
+  }
+);
+
+/*
+return lines.length ? (
+  <div
+    className={className}
+    ref={div => {
+      elRef.current = div;
+      if (typeof ref == 'function') {
+        ref(div);
+      } else if (ref) {
+        (ref as MutableRefObject<HTMLDivElement | null>).current = div;
+      }
+    }}
+    style={style}
+  >
+    {lines.map((line, i) => {
+      let words = line.split(' ');
+      words = words.map((word, i) =>
+        i === words.length - 1 ? word : word + ' '
+      );
+      return (
+        <LineWrapper key={i} lineIndex={i} totalLines={totalLines.current} extraProps={extraProps}>
+          {words.map((word, j) => {
+            const letters = word.split('');
+            return (
+              <WordWrapper
+                key={j}
+                lineIndex={i}
+                totalLines={totalLines.current}
+                wordIndex={j}
+                totalWords={totalWords.current}
+                countIndex={wordCount++}
+                extraProps={extraProps}
+              >
+                {letters.map((char, k) => (
+                  <LetterWrapper
+                    key={k}
                     lineIndex={i}
                     totalLines={totalLines.current}
                     wordIndex={j}
                     totalWords={totalWords.current}
-                    countIndex={wordCount++}
+                    letterIndex={k}
+                    totalLetters={totalChars.current}
+                    countIndex={letterCount++}
                     extraProps={extraProps}
                   >
-                    {letters.map((char, k) => (
-                      <LetterWrapper
-                        key={k}
-                        lineIndex={i}
-                        totalLines={totalLines.current}
-                        wordIndex={j}
-                        totalWords={totalWords.current}
-                        letterIndex={k}
-                        totalLetters={totalChars.current}
-                        countIndex={letterCount++}
-                        extraProps={extraProps}
-                      >
-                        {char}
-                      </LetterWrapper>
-                    ))}
-                  </WordWrapper>
-                );
-              })}
-            </LineWrapper>
-          );
-        })}
-      </div>
-    ) : (
-      <div className={className} ref={elRef} style={style}>
-        {text.split(' ').map((word, i) => (
-          <span key={i}>{word} </span>
-        ))}
-      </div>
-    );
-  }
+                    {char}
+                  </LetterWrapper>
+                ))}
+              </WordWrapper>
+            );
+          })}
+        </LineWrapper>
+      );
+    })}
+  </div>
+) : (
+  <div className={className} ref={elRef} style={style}>
+    {text.split(' ').map((word, i) => (
+      <span key={i}>{word} </span>
+    ))}
+  </div>
 );
+
+*/
